@@ -1,55 +1,73 @@
 import pygame
-from ships import *
-import random
-pygame.init()
+from random import choice
 
-class Section:
-    def __init__(self, x, y):
-        self.rect = pygame.Rect(x, y, 50, 50)
-        self.color = 'white'
+
+class Block:
+    def __init__(self, _x, _y, color):
+        self.x = _x
+        self.y = _y
+        self.color = color
+        self.rect = pygame.Rect(_x, _y, 50, 50)
+        self.text = ''
+
+    def setText(self, text=''):
+        self.text = text
 
     def draw(self, scr):
-        pygame.draw.rect(scr, self.color, self.rect, 3)
+        pygame.draw.rect(scr, self.color, self.rect, 1, 0)  # рисуем квадрат
+        font = pygame.font.SysFont('verdana', 25).render(self.text, True, 'white')  # создём шрифт для текста
+        scr.blit(font, (self.rect.x + 15, self.rect.y + 5))
 
-screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+
+# pygame setup
+pygame.init()
+screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
 running = True
 
-kybiki = []
-for x in range(0,500,50):
-    for y in range(0,500,50):
-        r = Section( x + 50, y + 50)
-        kybiki.append(r)
+words = ["Дерево", "комп'ютер", "вода", "клавіатура", "поле", "стіл", "ігри", "небо", "сонечко", "земля", "світ", "мова", "склянка", "інтернет", "годинник"]
+word = choice(words)
+spisok = []
 
-kybiki2 = []
-for x in range(0,500,50):
-    for y in range(0,500,50):
-        r = Section(x + 600,y + 50)
-        kybiki2.append(r)
+x = 50
+for i in range(len(word)):
+    spisok.append(Block(x, 50, "white"))
+    spisok[i].setText('')
+    x += 50
 
-ship1 = QuarterShip()
-s = random.choice(kybiki)
-index = kybiki.index(s)
-sections = []
-for i in range(ship1.section):
-    sections.append(kybiki[index + i])
-
-ship1.setShip(sections)
+keys = ["А", "Б", "В", "Г", "Ґ", "Д", "Е", "Є", "Ж", "З", "И", "І", "Ї", "Й", "К", "Л", "М", "Н", "О", "П", "Р", "С", "Т", "У", "Ф", "Х", "Ц", "Ч", "Ш", "Щ", "Ь", "Ю", "Я"]
+keyboard = []
+x = 50
+y = 400
+for i in range(len(keys)):
+    keyboard.append(Block(x, y, 'blue'))
+    keyboard[i].setText(keys[i])
+    x += 50
+    if i > 0 and i % 11 == 0:
+        x = 50
+        y += 50
 
 while running:
-    screen.fill('black')
+    # poll for events
+    # pygame.QUIT event means the user clicked X to close your window
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-    for k in kybiki:
-        k.draw(screen)
-    for k in kybiki2:
-        k.draw(screen)
 
-    pygame.display.update()
+    # fill the screen with a color to wipe away anything from last frame
+    screen.fill("purple")
 
-    clock.tick(60)
+    # RENDER YOUR GAME HERE
+    for s in spisok:
+        s.draw(screen)
+
+    for key in keyboard:
+        key.draw(screen)
+    # flip() the display to put your work on screen
+    pygame.display.flip()
+
+
+    clock.tick(60)  # limits FPS to 60
+
 pygame.quit()
-
-
